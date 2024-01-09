@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:lesson_locale_storage_january_8/services/db_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -9,6 +12,44 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int counter = 0;
+  @override
+
+  //As we know init state is beginning of our project that's why we should give
+  // to it coming first value
+  void initState() {
+    getData();
+    super.initState();
+  }
+
+  // In this function we try to get first data which is reading in getCounter()
+  Future<void> getData() async {
+    counter = await DBService.getCounter() ?? 0;
+    setState(() {});
+  }
+  // It is time to write plus and minus functions
+  void plus(){
+    setState(() {
+      counter++;
+    });
+  }
+  void minus(){
+    setState(() {
+      counter--;
+    });
+  }
+
+  // WE SHOULD ALSO WRITE CLEAR FUNCTION FOR CLEAR BUTTON
+  void clear(){
+    counter = 0 ;
+   DBService.deleteCounter();
+   setState(() {});
+  }
+  //AND ALSO WE SHOULD ADD SAVE BUTTON FUNCTION FOR SAVE LAST DATA
+  Future<void> save(int enteredCounterValue) async{
+   bool result = await DBService.setCunter(enteredCounterValue);
+   log('message : $result');
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
@@ -22,19 +63,31 @@ class _HomePageState extends State<HomePage> {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               ElevatedButton(
-                  onPressed: (){},
-                  child: const Text('+'),
+                onPressed: (){
+                  minus();
+                },
+                child:  const Text('-'),
               ),
               ElevatedButton(
-                  onPressed: (){},
+                  onPressed: (){
+                    clear();
+                  },
                   child:  const Text('Clear'),
               ),
               ElevatedButton(
-                onPressed: (){},
-                child:  const Text('-'),
+                  onPressed: (){
+                    plus();
+                  },
+                  child: const Text('+'),
               ),
             ],
-          )
+          ),
+          ElevatedButton(
+            onPressed: (){
+              save(counter);
+            },
+            child:  const Text('save'),
+          ),
         ],
       ),
     );
